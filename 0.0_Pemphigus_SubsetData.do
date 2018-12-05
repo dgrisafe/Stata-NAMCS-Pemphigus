@@ -61,7 +61,7 @@ foreach set in `yeardata2'{
 	use `set'
 		
 	*keep observations with diagnoses of Bullous dermatoses (694) 
-	keep if	strpos(diag1, "694") | strpos(diag2, "694") | strpos(diag3, "694")
+	keep if	strpos(diag13d, "694") | strpos(diag23d, "694") | strpos(diag33d, "694")
 			
 	*change directory to where would like to save datasets
 	cd "`output'"

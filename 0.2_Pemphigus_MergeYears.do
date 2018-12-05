@@ -33,7 +33,7 @@ use namcs2015.dta
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED30 using namcs2014.dta
+			s_MED1-s_MED30 using namcs2014.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -43,7 +43,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED10 using namcs2013.dta
+			s_MED1-s_MED10 using namcs2013.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -53,7 +53,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED10 using namcs2012.dta
+			s_MED1-s_MED10 using namcs2012.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -64,7 +64,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2011.dta
+			s_MED1-s_MED8 using namcs2011.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -74,7 +74,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2010.dta
+			s_MED1-s_MED8 using namcs2010.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -84,17 +84,17 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2009.dta
+			s_MED1-s_MED8 using namcs2009.dta
 
 	*drop the merge indicator
 	drop _merge
 
 	
-/*merge 2008 to previous
+*merge 2008 to previous
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2008.dta
+			s_MED1-s_MED8 using namcs2008.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -104,7 +104,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2007.dta
+			s_MED1-s_MED8 using namcs2007.dta
 
 	*drop the merge indicator
 	drop _merge	
@@ -114,7 +114,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2006.dta
+			s_MED1-s_MED8 using namcs2006.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -124,7 +124,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using namcs2005.dta
+			s_MED1-s_MED8 using namcs2005.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -135,7 +135,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED8 using namcs2004.dta
+			s_MED1-s_MED8 using namcs2004.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -145,13 +145,13 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED8 using namcs2003.dta
+			s_MED1-s_MED8 using namcs2003.dta
 
 	*drop the merge indicator
 	drop _merge
 	
 	
-*merge 2002 to previous
+/*merge 2002 to previous
 *	differences: only 6 meds
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
@@ -183,8 +183,30 @@ merge 1:1 	YEAR PATWT 														///
 	drop _merge		
 */
 
+
+/*
+Final formatting for all variables in single merged document
+*/
+
+*format diagnosis string variables with "-9" as "" (missing)
+local dxvar	DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D
+foreach var in `dxvar'{
+	replace `var' = "" if `var' == "-9"
+}
+
 *sort by year, descending
 gsort -YEAR
+
+*organize variables in meaningful order
+order  	YEAR SETTYPE PATWT 														///
+		DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
+		SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
+		s_MED1-s_MED30															///
+		ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON AUTISM CANCER CASTAGE	///
+		CEBVD CAD CHF CKD COPD CRF DEPRN DIABETES DIABTYP1 DIABTYP2 DIABTYP0	///
+		ESRD HIV HPE HTN HYPLIPID IHD OBESITY OSA OSTPRSIS SUBSTAB				///
+		NOCHRON TOTCHRON
+
 
 cd "`output'"
 save namcs_2015to1993, replace
