@@ -19,7 +19,7 @@ keep if (	strpos(diag1, "6944") | strpos(diag2, "6944") | strpos(diag3, "6944") 
 
 
 *check out the observations in subset
-list patwt diag1 diag2 diag3 age sex race ethnic
+list patwt diag1 diag2 diag3 age sex racer ethnic
 summarize patwt diag1 diag2 diag3 age sex
 
 *only keep relevant variables for Sharma (2007)
@@ -33,13 +33,13 @@ summarize patwt diag1 diag2 diag3 age sex
 *	Keep all variables for weights
 keep 	year settype patwt 													///
 		diag1 diag2 diag3 													///
-		sex age ager race ethnic paytype region msa owns specr 				///
+		sex age ager racer ethnic paytype region msa owns specr 			///
 		med1-med8
 
 *format variables so in standard format as datasets from later years
 rename(	year settype patwt 													///
 		diag1 diag2 diag3 													///
-		sex age ager race ethnic paytype region msa owns specr				///
+		sex age ager racer ethnic paytype region msa owns specr				///
 		med1 med2 med3 med4 med5 med6 med7 med8								///
 	) (	YEAR SETTYPE PATWT 													///
 		DIAG1 DIAG2 DIAG3 													///

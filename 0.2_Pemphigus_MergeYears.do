@@ -1,50 +1,59 @@
-*combine all pemphigus datasets for years 1993 to 2015]
-*need to go back to cutting programs to ensure the formatting is all the same
-
 cls
 clear
 
-*mac path to pemphigus/oid complete NAMCS datasets for 1993 to 2015
-*	each dataset has about 10 observations
-cd "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1992-15"
+/*
+This program will merge formatted datasets to single dataset
+for years 1993 to 2015]
 
-*load the datasets from 2006 to 2015 first, since they are the most similar
+Formatted to 2015 variables:
+	YEAR SETTYPE PATWT
+	DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D
+	ETOHAB ALZHD ARTHRTIS ASTHMA AUTISM CANCER CEBVD CKD COPD CHF CAD
+	DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID HTN 
+	OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
+	SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT
+	MED1-MED30
+*/
 
+*source folder where all the formatted NAMCS datasets are in Stata .dta format
+local source "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1993-15/0.1_Datasets_Formatted"
+
+*output folder where the merged NAMCS datasets will be created in Stata .dta format
+local output "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1993-15/0.2_Datasets_Merged"
+
+
+*load the datasets from 2009 to 2015 first, since they are the most similar
+cd "`source'"
 
 *2015
-use pemphigus_namcs_2015.dta
+use namcs2015.dta
 
 
 *merge 2014 to 2015
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED30 using pemphigus_namcs_2014.dta
+			MED1-MED30 using namcs2014.dta
 
 	*drop the merge indicator
 	drop _merge
 
 	
-*no observations for 2013
+*merge 2013 to previous
+merge 1:1 	YEAR SETTYPE PATWT 														///
+			DIAG1 DIAG2 DIAG3 														///
+			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
+			MED1-MED10 using namcs2013.dta
 
+	*drop the merge indicator
+	drop _merge
 
 *merge 2012 to previous
 *	differences: only 10 meds
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED10 using pemphigus_namcs_2012.dta
-
-	*drop the merge indicator
-	drop _merge
-
-
-*merge 2012chc to previous
-*	differences: OWNSR_CHC (not "OWNSR"), so don't merge on it
-merge 1:1 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG2 DIAG3 														///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA SPECR SPECCAT	///
-			MED1-MED10 using pemphigus_namcs_2012_chc.dta
+			MED1-MED10 using namcs2012.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -55,7 +64,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2011.dta
+			MED1-MED8 using namcs2011.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -65,7 +74,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2010.dta
+			MED1-MED8 using namcs2010.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -75,17 +84,17 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2009.dta
+			MED1-MED8 using namcs2009.dta
 
 	*drop the merge indicator
 	drop _merge
 
 	
-*merge 2008 to previous
+/*merge 2008 to previous
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2008.dta
+			MED1-MED8 using namcs2008.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -95,7 +104,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2007.dta
+			MED1-MED8 using namcs2007.dta
 
 	*drop the merge indicator
 	drop _merge	
@@ -105,7 +114,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2006.dta
+			MED1-MED8 using namcs2006.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -115,7 +124,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8 using pemphigus_namcs_2005.dta
+			MED1-MED8 using namcs2005.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -126,7 +135,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED8 using pemphigus_namcs_2004.dta
+			MED1-MED8 using namcs2004.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -136,7 +145,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED8 using pemphigus_namcs_2003.dta
+			MED1-MED8 using namcs2003.dta
 
 	*drop the merge indicator
 	drop _merge
@@ -147,7 +156,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED6 using pemphigus_namcs_2002.dta
+			MED1-MED6 using namcs2002.dta
 
 	*drop the merge indicator
 	drop _merge	
@@ -157,7 +166,7 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED6 using pemphigus_namcs_2001.dta
+			MED1-MED6 using namcs2001.dta
 
 	*drop the merge indicator
 	drop _merge	
@@ -168,10 +177,14 @@ merge 1:1 	YEAR SETTYPE PATWT 														///
 merge 1:1 	YEAR PATWT 														///
 			DIAG1 DIAG2 DIAG3 														///
 			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 	///
-			MED1-MED6 using pemphigus_namcs_2000.dta
+			MED1-MED6 using namcs2000.dta
 
 	*drop the merge indicator
-	drop _merge	
-	
-	
-*save pemphigus_namcs_2015to1993, replace
+	drop _merge		
+*/
+
+*sort by year, descending
+gsort -YEAR
+
+cd "`output'"
+save namcs_2015to1993, replace
