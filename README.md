@@ -1,4 +1,4 @@
-# Stata-NAMCS-Pemphigus
+# Stata NAMCS Pemphigus
 
 The numeric headings of each program help organize the workflow in a single, linear direction.
 I will begin using "1_" once the final dataset has been made and analysis begins.
