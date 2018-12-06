@@ -55,20 +55,12 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
 			MED1-MED30																///
 			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON AUTISM CANCER CEBVD		///
 			CKD COPD CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID	///
 			HTN OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
-			
-	order  	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED30																///
-			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON AUTISM CANCER CEBVD		///
-			CKD COPD CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID	///
-			HTN OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
-		
+					
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8  MED9  MED10 ///
 				MED11 MED12 MED13 MED14 MED15 MED16 MED17 MED18 MED19 MED20 ///
@@ -115,20 +107,12 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
 			MED1-MED30																///
 			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD CKD COPD	///
 			CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID HTN		///
 			OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
-			
-	order  	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED30																///
-			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD CKD COPD	///
-			CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID HTN		///
-			OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
-		
+					
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8  MED9  MED10 ///
 				MED11 MED12 MED13 MED14 MED15 MED16 MED17 MED18 MED19 MED20 ///
@@ -177,18 +161,11 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
 			MED1-MED10																///
 			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD COPD CRF CHF DEPRN		///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
-	order 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED10																///
-			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD COPD CRF CHF DEPRN		///
-			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
-	
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8  MED9  MED10
 	foreach var in `meds'{
@@ -235,7 +212,7 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR_14 SPECCAT	///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR_14 SPECCAT	///
 			MED1-MED10																///
 			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CASTAGE CEBVD COPD CRF CHF		///
 			DEPRN DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
@@ -243,13 +220,6 @@ foreach set in `yeardata1'{
 	*variables renamed in 2012
 	rename (SPECR_14) (SPECR)
 
-	order 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED10																///
-			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CASTAGE CEBVD COPD CRF CHF		///
-			DEPRN DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
-		
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8  MED9  MED10
 	foreach var in `meds'{
@@ -313,7 +283,7 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 													///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D							///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGION MSA OWNSR SPECR SPECCAT	///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR SPECCAT	///
 			MED1-MED8															///
 			ARTHRTIS ASTHMA CANCER CEBVD CRF CHF COPD DEPRN DIABETES HYPLIPID	///
 			HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
@@ -321,13 +291,6 @@ foreach set in `yeardata1'{
 	*variables renamed in 2012
 	rename (REGION) (REGIONOFF)
 
-	order  	YEAR SETTYPE PATWT 													///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D							///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8															///
-			ARTHRTIS ASTHMA CANCER CEBVD CRF CHF COPD DEPRN DIABETES HYPLIPID	///
-			HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
-		
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8
 	foreach var in `meds'{
@@ -398,7 +361,7 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGION MSA OWNSR SPECR SPECCAT		///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR SPECCAT		///
 			MED1-MED8																///
 			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
@@ -406,13 +369,6 @@ foreach set in `yeardata1'{
 	*variables renamed in 2008
 	rename (REGION) (REGIONOFF)
 			
-	order 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8																///
-			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
-			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
-	
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8
 	foreach var in `meds'{
@@ -487,7 +443,7 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPE REGION MSA OWNSR SPECR SPECCAT		///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPE REGION MSA OWNSR SPECR SPECCAT		///
 			MED1-MED8																///
 			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
@@ -495,13 +451,6 @@ foreach set in `yeardata1'{
 	*variables renamed in 2007
 	rename (REGION PAYTYPE) (REGIONOFF PAYTYPER)
 			
-	order 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8																///
-			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
-			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
-	
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8
 	foreach var in `meds'{
@@ -576,21 +525,14 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	YEAR SETTYPE PATWT 														///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPE REGION MSA OWNSR SPECR SPECCAT		///
+			SEX AGE AGER RACER RACERETH RACE PAYTYPE REGION MSA OWNSR SPECR SPECCAT		///
 			MED1-MED8																///
 			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
 	*variables renamed in 2006
-	rename (REGION PAYTYPE) (REGIONOFF PAYTYPER)
+	rename (REGION PAYTYPE RACE) (REGIONOFF PAYTYPER RACEUN)
 			
-	order 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8																///
-			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
-			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
-	
 	*format medication variables so consistient with format from year to year
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8
 	foreach var in `meds'{
@@ -660,21 +602,14 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	year settype patwt 														///
 			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH paytype region msa OWNSR specr speccat		///
+			sex age ager racer RACERETH race paytype region msa OWNSR specr speccat		///
 			med1-med8																///
 			arthrtis asthma cancer chf crf copd cebvd hyplipid deprn				///
 			diabetes htn ihd obesity ostprsis nochron totchron
 
 	*variables renamed in 2005
-	rename (region paytype) (REGIONOFF PAYTYPER)
+	rename (region paytype race) (REGIONOFF PAYTYPER RACEUN)
 	
-	order 	year settype patwt 														///
-			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH PAYTYPER REGIONOFF msa OWNSR specr speccat	///
-			med1-med8																///
-			arthrtis asthma cancer chf crf copd cebvd hyplipid deprn				///
-			diabetes htn ihd obesity ostprsis nochron totchron
-
 	*rename all variables uppercase
 	rename *, upper
 		
@@ -745,17 +680,12 @@ foreach set in `yeardata1'{
 	*Keep all variables for weights
 	keep 	year settype patwt 														///
 			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH paytype region msa OWNSR specr 				///
+			sex age ager racer RACERETH race paytype region msa OWNSR specr 				///
 			med1-med8
 
 	*variables renamed in 2004
-	rename (region paytype) (REGIONOFF PAYTYPER)
+	rename (region paytype race) (REGIONOFF PAYTYPER RACEUN)
 			
-	order	year settype patwt 														///
-			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH PAYTYPER REGIONOFF msa OWNSR specr 				///
-			med1-med8
-	
 	*rename all variables uppercase
 	rename *, upper
 
