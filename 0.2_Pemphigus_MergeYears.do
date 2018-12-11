@@ -32,18 +32,17 @@ use "namcs2015.dta"
 *macro of all subsequent datasets to be merged (2014 to 1993)
 local datasets_14to93	"namcs2014.dta"	"namcs2013.dta"	"namcs2012.dta"	"namcs2011.dta"	"namcs2010.dta"	///
 						"namcs2009.dta"	"namcs2008.dta"	"namcs2007.dta"	"namcs2006.dta"	"namcs2005.dta"	///
-						"namcs2004.dta"	"namcs2003.dta"	
-*						"namcs2002.dta"	"namcs2001.dta"	"namcs2000.dta"	///
-*						"namcs1999.dta"	"namcs1998.dta"	"namcs1997.dta"	"namcs1996.dta"	"namcs1995.dta"	///
-*						"namcs1994.dta"	"namcs1993.dta"
+						"namcs2004.dta"	"namcs2003.dta"													///
+						"namcs2002.dta"	"namcs2001.dta"	"namcs2000.dta"									///
+						"namcs1999.dta"	"namcs1998.dta"	"namcs1997.dta"	"namcs1996.dta"	"namcs1995.dta"
 
 *for loop to merge each dataset
 foreach dataset in "`datasets_14to93'"{
 	*merge dataset with previous
 	merge 1:1 	YEAR SETTYPE PATWT 														///
 				DIAG1 DIAG2 DIAG3 														///
-				SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA OWNSR SPECR 			///
-				s_MED1-s_MED8 using "`dataset'"
+				SEX AGE AGER RACER RACERETH PAYTYPER REGIONOFF MSA SPECR 				///
+				s_MED1-s_MED5 using "`dataset'"
 	*drop the merge indicator
 	drop _merge	
 }		

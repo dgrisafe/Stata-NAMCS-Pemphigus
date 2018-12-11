@@ -51,6 +51,8 @@ replace pemphind = 1 if	DIAG13D == "694" | DIAG23D == "694" | DIAG33D == "694" |
 gen pemphcat = .
 	*Dermatitis herpetiformis (694.0)
 		replace pemphcat = 0 if	DIAG1 == "6940-" | DIAG2 == "6940-" | DIAG3 == "6940-" | DIAG4 == "6940-" | DIAG5 == "6940-"
+	*Impetigo herpetiformis (694.3)
+		replace pemphcat = 3 if	DIAG1 == "6943-" | DIAG2 == "6943-" | DIAG3 == "6943-" | DIAG4 == "6943-" | DIAG5 == "6943-"
 	*Pemphigus (694.4)
 		replace pemphcat = 4 if	DIAG1 == "6944-" | DIAG2 == "6944-" | DIAG3 == "6944-" | DIAG4 == "6944-" | DIAG5 == "6944-"
 	*Pemphigoid (694.5)
@@ -66,6 +68,7 @@ gen pemphcat = .
 
 *format
 label define pemphcatf	0 "(694.0) Dermatitis herpetiformis"													///
+						3 "(694.3) Impetigo herpetiformis" 																///
 						4 "(694.4) Pemphigus"																	///
 						5 "(694.5) Pemphigoid"																	///
 						60 "(694.60) Benign mucous membrane pemphigoid without mention of ocular involvement"	///
@@ -74,8 +77,24 @@ label define pemphcatf	0 "(694.0) Dermatitis herpetiformis"													///
 						9 "(694.9) Unspecified bullous dermatoses"
 label value pemphcat pemphcatf
 		
+	
+*collapse pemphcat so ≥ 5 observations per category
+gen pemphcatcol = .
+replace pemphcatcol = 3 	if pemphcat == 4
+replace pemphcatcol = 1 	if pemphcat == 5
+replace pemphcatcol = 6 	if pemphcat == 0
+replace pemphcatcol = 2 	if pemphcat == 9
+replace pemphcatcol = 601 	if pemphcat == 3 | pemphcat == 8 | pemphcat == 60 | pemphcat == 61
+
+label define pemphcatcolf	1 "(694.5) Pemphigoid"						///
+							2 "(694.9) Unspecified bullous dermatoses"	///
+							3 "(694.4) Pemphigus"						///
+							6 "(694.0) Dermatitis herpetiformis"		///
+							601 "Other"
+label value pemphcatcol pemphcatcolf
+
 *look at 				
-tab pemphcat
+tab pemphcat pemphcatcol
 
 
 *Reformat Table 1 variables as they were in Horii 2007, 
@@ -114,7 +133,7 @@ tab pemphcat
 	replace agecat = 8 if AGE >=80 & AGE < 90
 	replace agecat = 9 if AGE >= 90
 	label define agecatf	0 "< 10"		///
-							1 "teenager"		///
+							1 "teenager"	///
 							2 "20's"		///
 							3 "30's"		///
 							4 "40's"		///
@@ -392,12 +411,14 @@ tab pemphcat
 	tab provider SPECR
 
 
+**Total Estimated Patient Visits for 694 from 2003 to 2015**
+total PATWT
 
 **GRAPH Table 1 Variables w/Collapsed Categories**
 
 local table1_NAMCS		SEX AGER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR
 local table1_all		gender		agecat agecat5		race white		insur		region		setting		practice physoff	provider
-local table1_collapse	gender agecat5 white insur region setting physoff provider
+local table1_collapse	pemphcatcol gender agecat5 white insur region setting physoff provider
 
 *change directory to analysis figure folder
 cd "`fig_output'"
@@ -407,9 +428,9 @@ foreach dvar in `table1_collapse' {
 	*check to make sure at least 5 observations in each category
 	graph bar (count), over(`dvar', label(ticks angle(15)))						///
 		blabel(bar, format(%9.0f))												///
-		title("Frequency of observations from 2003 to 2015 by `dvar'")			///
+		title("Frequency of observations from 1995 to 2015 by `dvar'")			///
 		subtitle("Must be ≥ 5 observations in each category (Cochran's rule)")	///
-		ytitle("Number of Observations (count)")										///
+		ytitle("Number of Observations (count)")								///
 		name(bar_`dvar'_count, replace)
 		graph export "bar_`dvar'_count.png", replace
 
@@ -437,8 +458,10 @@ foreach dvar in `table1_collapse' {
 	total PATWT, over(`dvar')
 }
 
-/*save dataset with reformatted variables
-save "namcs_2015to2003_anal.dta", replace
+*save dataset with reformatted variables
+order ptid YEAR SETTYPE PATWT pemphind pemphcat
+sort ptid
+*save "namcs_2015to2003_anal.dta", replace
 
 
 /*
@@ -469,12 +492,18 @@ foreach sdem in `NAMCSvars' {
 	graph export "EDA_`sdem'.png", replace
 	*/
 }
+
+/*
+Table 2 - Bullous dermatoses (ICD9 694) diagnosis types
 */
+
+total PATWT, over(pemphcat)
+
 
 /*
 Figure 1 - table of summed patient weights by year, with 95% confidence intervals
 See Figure 1 (Davis 2015)
-/
+*/
 
 *data to be used to make a line plot in excel
 total PATWT, over(YEAR)
@@ -483,7 +512,7 @@ total PATWT, over(YEAR)
 /* 
 reshape diagnosis data from wide to long 
 https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
-*/
+/
 
 *change to output directory for all analysis
 cd "`dat_output'"

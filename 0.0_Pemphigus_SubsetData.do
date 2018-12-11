@@ -96,31 +96,3 @@ foreach set in `yeardata3'{
 	save `set', replace
 	
 }
-
-
-/* These datasets have *labeled categorical* 3-digit diagnosis variables */
-
-*local macro subsetting each dataset
-local yeardata3	namcs1994 namcs1993
-				
-	
-*Loop subsetting data on a given 3 digit ICD9 diagnosis
-foreach set in `yeardata3'{
-	
-	*clear loaded data
-	clear
-	
-	*mac path to complete NAMCS datasets for 1993 to 2015
-	cd "`source'"
-
-	*load the dataset
-	use `set'
-		
-	*keep observations with diagnoses of Bullous dermatoses (694) 
-	keep if	DIAG13D == 1694 | DIAG23D == 1694 | DIAG33D == 1694
-			
-	*change directory to where would like to save datasets
-	cd "`output'"
-	save `set', replace
-	
-}
