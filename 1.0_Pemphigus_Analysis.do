@@ -426,7 +426,7 @@ cd "`fig_output'"
 foreach dvar in `table1_collapse' {
 	
 	*check to make sure at least 5 observations in each category
-	graph bar (count), over(`dvar', label(ticks angle(15)))						///
+	graph bar (count), over(`dvar', label(ticks angle(15) labsize(small)))		///
 		blabel(bar, format(%9.0f))												///
 		title("Frequency of observations from 1995 to 2015 by `dvar'")			///
 		subtitle("Must be ≥ 5 observations in each category (Cochran's rule)")	///
@@ -461,7 +461,7 @@ foreach dvar in `table1_collapse' {
 *save dataset with reformatted variables
 order ptid YEAR SETTYPE PATWT pemphind pemphcat
 sort ptid
-*save "namcs_2015to2003_anal.dta", replace
+*save "namcs_2015to1995_anal.dta", replace
 
 
 /*
@@ -482,15 +482,15 @@ foreach sdem in `NAMCSvars' {
 	*show number of observations by sociodemographic variables
 	bysort `sdem': sum PATWT, vsquish
 	
-	/*corresponding graphs
+	*corresponding graphs
 	graph hbar (percent) PATWT, over(`sdem', label(labsize(small) angle(45) ticks))	///
-	blabel(bar, format(%9.1f))										///
-	title("Percent of Total Patient Weight by `sdem'") 				///
-	ytitle("Percent of Patient Weight")								///
+	blabel(bar, format(%9.1f))														///
+	title("Percent of Total Patient Weight by `sdem'") 								///
+	ytitle("Percent of Patient Weight")												///
 	ylabel(0(25)100) ymticks(0(10)100)
 	*save graph
 	graph export "EDA_`sdem'.png", replace
-	*/
+	
 }
 
 /*
