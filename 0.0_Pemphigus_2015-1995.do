@@ -22,11 +22,11 @@ Formatted to 2015 variables:
 	MED1-MED30
 */
 
-*source folder where all the subset NAMCS datasets are in Stata .dta format
-local source "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1993-15/0.0_Datasets_Subset"
+*source folder where all the raw NAMCS datasets are in Stata .dta format
+local source "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/!NAMCS_Stata"
 
 *output folder where all the formatted NAMCS datasets will be created in Stata .dta format
-local output "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1993-15/0.1_Datasets_Formatted"
+local output "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/0.0_Datasets_Formatted"
 
 
 /* 
@@ -46,7 +46,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -98,7 +98,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -152,7 +152,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -203,7 +203,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -260,7 +260,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -328,7 +328,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -407,7 +407,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -489,7 +489,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -571,7 +571,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -651,7 +651,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -729,7 +729,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -812,7 +812,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -891,7 +891,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset
@@ -985,7 +985,7 @@ foreach set in `yeardata1'{
 	*clear loaded data
 	clear
 		
-	*mac path to complete NAMCS datasets for 1993 to 2015
+	*mac path to complete NAMCS datasets for 1995 to 2015
 	cd "`source'"
 
 	*load the dataset

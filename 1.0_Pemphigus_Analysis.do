@@ -16,19 +16,21 @@ Formatted to 2015 variables:
 */
 
 *source folder where the merged NAMCS dataset is in Stata .dta format
-local source "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1993-15/0.2_Datasets_Merged"
+local source_all "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/0.1_Datasets_Merged"
+
+local source_case "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/0.2_Datasets_PemphigusID"
 
 *output folder where analysis Figures and Tables output will be stored
-local dat_output "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1993-15/0.3_Datasets_Analysis"
+local output_dat "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/1.0_Pemphigus_Analysis"
 
 *output folder where analysis Figures and Tables output will be stored
-local fig_output "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Figures & Tables/0.3_FiguresTables_Analysis"
+local output_fig "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Figures & Tables/1.0_Pemphigus_Analysis"
 
 *change to output directory for all analysis
-cd "`source'"
+cd "`source_case'"
 
 *load merged, clean dataset
-use "namcs_2015to1993.dta"
+use "namcs_2015to1995_ICD9_694.dta"
 
 	
 /*
@@ -36,19 +38,19 @@ Exploratory data analysis & Formatting
 */
 
 *change to output directory for datasets with new derived variables
-cd "`dat_output'"
+cd "`output_dat'"
 
+*sort on case status (cases, then controls), then by year (2015 to 1995)
+gsort -CACO -YEAR
 
 *make case id, useful for further analyses
 gen ptid = _n
 
 
-*indicator variable to see whether diagnosed with Bullous dermatoses (694)
-gen pemphind = 0
-replace pemphind = 1 if	DIAG13D == "694" | DIAG23D == "694" | DIAG33D == "694" | DIAG43D == "694" | DIAG53D == "694"
-
 *indicator variable to see whether diagnosed with Pemphigus (694.4), Pemphigoid (694.5), or Unspecified bullous dermatoses (694.9)
 gen pemphcat = .
+	*identify all cases
+		replace pemphcat = -1 if CACO == 1
 	*Dermatitis herpetiformis (694.0)
 		replace pemphcat = 0 if	DIAG1 == "6940-" | DIAG2 == "6940-" | DIAG3 == "6940-" | DIAG4 == "6940-" | DIAG5 == "6940-"
 	*Impetigo herpetiformis (694.3)
@@ -67,8 +69,9 @@ gen pemphcat = .
 		replace pemphcat = 9 if	DIAG1 == "6949-" | DIAG2 == "6949-" | DIAG3 == "6949-" | DIAG4 == "6949-" | DIAG5 == "6949-"
 
 *format
-label define pemphcatf	0 "(694.0) Dermatitis herpetiformis"													///
-						3 "(694.3) Impetigo herpetiformis" 																///
+label define pemphcatf	-1 "Case that does not fit into any specific category"									///
+						0 "(694.0) Dermatitis herpetiformis"													///
+						3 "(694.3) Impetigo herpetiformis" 														///
 						4 "(694.4) Pemphigus"																	///
 						5 "(694.5) Pemphigoid"																	///
 						60 "(694.60) Benign mucous membrane pemphigoid without mention of ocular involvement"	///
@@ -76,21 +79,18 @@ label define pemphcatf	0 "(694.0) Dermatitis herpetiformis"													///
 						8 "(694.8) Other specified bullous dermatoses"											///
 						9 "(694.9) Unspecified bullous dermatoses"
 label value pemphcat pemphcatf
-		
+
+tab pemphcat
 	
 *collapse pemphcat so ≥ 5 observations per category
 gen pemphcatcol = .
-replace pemphcatcol = 3 	if pemphcat == 4
 replace pemphcatcol = 1 	if pemphcat == 5
-replace pemphcatcol = 6 	if pemphcat == 0
-replace pemphcatcol = 2 	if pemphcat == 9
-replace pemphcatcol = 601 	if pemphcat == 3 | pemphcat == 8 | pemphcat == 60 | pemphcat == 61
+replace pemphcatcol = 2 	if pemphcat == 4
+replace pemphcatcol = 3 	if pemphcat == 0 | pemphcat == 3 | pemphcat == 8 | pemphcat == 9 | pemphcat == 60 | pemphcat == 61
 
 label define pemphcatcolf	1 "(694.5) Pemphigoid"						///
-							2 "(694.9) Unspecified bullous dermatoses"	///
-							3 "(694.4) Pemphigus"						///
-							6 "(694.0) Dermatitis herpetiformis"		///
-							601 "Other"
+							2 "(694.4) Pemphigus"						///
+							3 "Other or Unspecified bullous dermatoses"
 label value pemphcatcol pemphcatcolf
 
 *look at 				
@@ -411,65 +411,75 @@ tab pemphcat pemphcatcol
 	tab provider SPECR
 
 
-**Total Estimated Patient Visits for 694 from 2003 to 2015**
+**Total Estimated Patient Visits for 694 from 1995 to 2015**
 total PATWT
 
 **GRAPH Table 1 Variables w/Collapsed Categories**
 
 local table1_NAMCS		SEX AGER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR
 local table1_all		gender		agecat agecat5		race white		insur		region		setting		practice physoff	provider
-local table1_collapse	pemphcatcol gender agecat5 white insur region setting physoff provider
+local diseaseCat		pemphcat pemphcatcol 
+local table1_collapse 	gender agecat5 white insur region setting physoff provider
 
 *change directory to analysis figure folder
-cd "`fig_output'"
+cd "`output_fig'"
 
+*summary statistics and estimates of all cases (694)
+sum PATWT if CACO == 1
+total PATWT if CACO == 1
+
+*summary statistics and estimates of all cases (694) by specific diseases
+bysort pemphcatcol:	sum PATWT if CACO == 1
+total PATWT if CACO == 1, over(pemphcatcol)
+
+*Tb1 - summary statistics and estimates of cases (694) and controls by sociodem vars
 foreach dvar in `table1_collapse' {
 	
-	*check to make sure at least 5 observations in each category
-	graph bar (count), over(`dvar', label(ticks angle(15) labsize(small)))		///
-		blabel(bar, format(%9.0f))												///
-		title("Frequency of observations from 1995 to 2015 by `dvar'")			///
-		subtitle("Must be ≥ 5 observations in each category (Cochran's rule)")	///
-		ytitle("Number of Observations (count)")								///
-		name(bar_`dvar'_count, replace)
-		graph export "bar_`dvar'_count.png", replace
-
-	/* 
-	This plot is NOT doing what I thought it was doing.
-	It's plotting the MEAN of PATWT by each categorical variable.
-	I want it to plot the sum by each categorical variable.
-	Need to make new dataset of sociodemographic variables
-	using "total PATWT, over(`dvar')"
-	
-	*now do patient weights
-	graph bar PATWT, over(`dvar', label(ticks angle(15)))		///
-		blabel(bar, format(%9.0f))								///
-		title("Patient visits from 2003 to 2015 by `dvar'")		///
-		ytitle("Number of Patient Visits (weighted)")			///
-		name(bar_`dvar'_PATWT, replace)
-		graph export "bar_`dvar'_PATWT.png", replace
-	*/
-
 	*look at counts in each category of SD variables
-	bysort `dvar':	sum PATWT
-	
+	bysort `dvar':	sum PATWT if CACO == 1
+	bysort `dvar':	sum PATWT if CACO == 0
 	
 	*look at PATWT summed by categorical SD variables
-	total PATWT, over(`dvar')
+	total PATWT if CACO == 1, over(`dvar')
+	total PATWT if CACO == 0, over(`dvar')
 }
 
+/*make bar graphs showing frequency counts of each demographic variable for cases and controls
+foreach dvar in `table1_collapse' {
+	
+	**case
+	graph bar (count) if CACO == 1, over(`dvar', label(ticks angle(15) labsize(small)))		///
+		blabel(bar, format(%9.0f))															///
+		title("Frequency of cases from 1995 to 2015 by `dvar'")								///
+		ytitle("Number of Observations (count)")											///
+		name(bar_`dvar'_case, replace)
+		graph export "bar_`dvar'_case.png", replace
+		
+	**control
+	graph bar (count) if CACO == 0, over(`dvar', label(ticks angle(15) labsize(small)))		///
+		blabel(bar, format(%9.0f))															///
+		title("Frequency of controls from 1995 to 2015 by `dvar'")							///
+		ytitle("Number of Observations (count)")											///
+		name(bar_`dvar'_control, replace)
+		graph export "bar_`dvar'_control.png", replace
+
+}
+*/
+
 *save dataset with reformatted variables
-order ptid YEAR SETTYPE PATWT pemphind pemphcat
+order ptid CACO YEAR SETTYPE PATWT pemphcatcol pemphcat
 sort ptid
-*save "namcs_2015to1995_anal.dta", replace
+
+cd "`output_dat'"
+save "namcs_2015to1995_anal.dta", replace
 
 
 /*
 Table 1 - Sociodemographics
-*/
+/
 
 *change to output directory for analysis figures and tables
-cd "`fig_output'"
+cd "`output_fig'"
 
 *all sociodemographic variables in table 1
 local NAMCSvars SEX AGER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR
@@ -492,6 +502,7 @@ foreach sdem in `NAMCSvars' {
 	graph export "EDA_`sdem'.png", replace
 	
 }
+*/
 
 /*
 Table 2 - Bullous dermatoses (ICD9 694) diagnosis types
@@ -506,31 +517,33 @@ See Figure 1 (Davis 2015)
 */
 
 *data to be used to make a line plot in excel
-total PATWT, over(YEAR)
+
+bysort YEAR:	sum PATWT if CACO == 1
+total PATWT if CACO == 1, over(YEAR)
 
 
 /* 
 reshape diagnosis data from wide to long 
 https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
-/
+*/
 
 *change to output directory for all analysis
-cd "`dat_output'"
+cd "`output_dat'"
 
 *load original wide dataset
-use "namcs_2015to2003_anal.dta"
+use "namcs_2015to1995_anal.dta"
 
 *look at data in wide form
-list ptid DIAG1 DIAG2 DIAG3 DIAG4 DIAG5
+list ptid DIAG1 DIAG2 DIAG3 DIAG4 DIAG5 if CACO == 1
 
 *reshape to long data
 reshape long DIAG, i(ptid) j(dxid) 
 
 *look at most common comorbidities (IGNORE any pemphigus diagnoses)
-tab DIAG, sort
+tab DIAG if CACO == 1, sort
 
 *save long dataset
-save "namcs_2015to1993_anal_LongDiag.dta", replace
+save "namcs_2015to1995_anal_LongDiag.dta", replace
 
 
 /* 
@@ -539,7 +552,7 @@ https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
 */
 
 *load analytical wide dataset
-use "namcs_2015to2003_anal.dta"
+use "namcs_2015to1995_anal.dta"
 
 *look at data in wide form
 list ptid s_MED1-s_MED30
@@ -559,7 +572,7 @@ replace diag1694 = 1 if DIAG13D == "694"
 tab s_MED if diag1694 == 1, sort
 
 *save long dataset
-save "namcs_2015to1993_anal_LongMeds.dta", replace
+save "namcs_2015to1995_anal_LongMeds.dta", replace
 
 
 /*
@@ -578,8 +591,8 @@ Pierce's notes for running logistics in NAMCS
 */
 
 *use wide analytical dataset for regression analysis
-cd "`dat_output'"
-use "namcs_2015to2003_anal.dta"
+cd "`output_dat'"
+use "namcs_2015to1995_anal.dta"
 
 *load directory for output
-cd "`fig_output'"
+cd "`output_fig'"
