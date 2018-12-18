@@ -411,8 +411,53 @@ tab pemphcat pemphcatcol
 	tab provider SPECR
 
 
-**Total Estimated Patient Visits for 694 from 1995 to 2015**
-total PATWT
+/* How to eliminate singletons in NAMCS data
+*	https://www.cdc.gov/nchs/data/ahcd/ultimatecluster.pdf
+*	Problem when running logistic regressions on survey data prior to year 2002
+
+*SAS code to create CSTRATM and CPSUM for 1993-2001
+
+	CSTRATM=STRATM;
+	CPSUM=PSUM;
+	IF CPSUM IN (1 2 3 4) THEN DO;
+	CSTRATM=(STRATM*100000)+(1000*(MOD(YEAR,100)))+
+	(SUBFILE*100)+PROSTRAT;
+	CPSUM=PROVIDER+100000;
+	END;
+	ELSE CSTRATM=(STRATM*100000);
+
+* need to keep variables: STRATM PSUM SUBFILE PROSTRAT PROVIDER
+
+*/
+
+	*this is the Stata version of the SAS loop above, taken from the link above that
+	replace CSTRATM = STRATM if (YEAR >= 1993 & YEAR <= 2001)
+	replace CPSUM  = PSUM if (YEAR >= 1993 & YEAR <= 2001)
+	gen calcWTs = .
+
+	replace CSTRATM = (STRATM * 100000) + (1000 * (mod(YEAR,100))) + (SUBFILE * 100) + PROSTRAT if (YEAR >= 1993 & YEAR <= 2001 & inlist(PSUM,1,2,3,4))
+	replace CPSUM = PROVIDER + 100000 if (YEAR >= 1993 & YEAR <= 2001 & inlist(PSUM,1,2,3,4))
+	replace calcWTs = 1 if (YEAR >= 1993 & YEAR <= 2001 & inlist(PSUM,1,2,3,4))
+
+	replace CSTRATM = (STRATM * 100000) if (YEAR >= 1993 & YEAR <= 2001 & !inlist(PSUM,1,2,3,4))
+	replace calcWTs = 2 if (YEAR >= 1993 & YEAR <= 2001 & !inlist(PSUM,1,2,3,4))
+	
+	label define calcWTsf 1 "Calc 1" 2 "Calc 2"
+	label value calcWTs calcWTsf
+	label variable calcWTs "How was CSTRATM calculated? (Years 1993 to 2001 only)"
+	
+	*look at calculated CSTRATM values
+	tab YEAR calcWTs
+
+
+/*
+**Total Estimated Patient Visits from 1995 to 2015**
+	
+	*cases
+	total PATWT if CACO == 1
+	
+	*controls
+	total PATWT if CACO == 0	
 
 **GRAPH Table 1 Variables w/Collapsed Categories**
 
@@ -465,13 +510,23 @@ foreach dvar in `table1_collapse' {
 
 }
 */
+*/
 
 *save dataset with reformatted variables
 order ptid CACO YEAR SETTYPE PATWT pemphcatcol pemphcat
 sort ptid
 
 cd "`output_dat'"
+
+*all observations
 save "namcs_2015to1995_anal.dta", replace
+
+*cases only
+keep if CACO == 1
+save "namcs_2015to1995_anal_CasesOnly.dta", replace
+
+*reload the entire dataset with formatted variables for further analysis
+use "namcs_2015to1995_anal.dta"
 
 
 /*
@@ -506,7 +561,7 @@ foreach sdem in `NAMCSvars' {
 
 /*
 Table 2 - Bullous dermatoses (ICD9 694) diagnosis types
-*/
+/
 
 total PATWT, over(pemphcat)
 
@@ -519,19 +574,33 @@ See Figure 1 (Davis 2015)
 *data to be used to make a line plot in excel
 
 bysort YEAR:	sum PATWT if CACO == 1
+
+*all Bullous dermatoses
 total PATWT if CACO == 1, over(YEAR)
 
+*(694.5) Pemphigoid
+bysort YEAR:	sum PATWT if pemphcatcol == 1
+total PATWT if pemphcatcol == 1, over(YEAR)
+
+*(694.4) Pemphigus
+bysort YEAR:	sum PATWT if pemphcatcol == 2
+total PATWT if pemphcatcol == 2, over(YEAR)
+
+*Other or Unspecified bullous dermatoses
+bysort YEAR:	sum PATWT if pemphcatcol == 3
+total PATWT if pemphcatcol == 3, over(YEAR)
+*/
 
 /* 
 reshape diagnosis data from wide to long 
 https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
 */
 
-*change to output directory for all analysis
+/*change to output directory for all analysis
 cd "`output_dat'"
 
 *load original wide dataset
-use "namcs_2015to1995_anal.dta"
+use "namcs_2015to1995_anal_CasesOnly.dta", clear
 
 *look at data in wide form
 list ptid DIAG1 DIAG2 DIAG3 DIAG4 DIAG5 if CACO == 1
@@ -539,8 +608,21 @@ list ptid DIAG1 DIAG2 DIAG3 DIAG4 DIAG5 if CACO == 1
 *reshape to long data
 reshape long DIAG, i(ptid) j(dxid) 
 
-*look at most common comorbidities (IGNORE any pemphigus diagnoses)
+*look at most common comorbidities: 
+*	(1) IGNORE any pemphigus diagnoses, 
+*	(2) IGNORE any comorbidities that have less than 2 observations
+*all Bullous dermatoses
 tab DIAG if CACO == 1, sort
+
+*(694.5) Pemphigoid
+tab DIAG if pemphcatcol == 1, sort
+
+*(694.4) Pemphigus
+tab DIAG if pemphcatcol == 2, sort
+
+*Other or Unspecified bullous dermatoses
+tab DIAG if pemphcatcol == 3, sort
+
 
 *save long dataset
 save "namcs_2015to1995_anal_LongDiag.dta", replace
@@ -552,10 +634,10 @@ https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
 */
 
 *load analytical wide dataset
-use "namcs_2015to1995_anal.dta"
+use "namcs_2015to1995_anal_CasesOnly.dta", clear
 
-*look at data in wide form
-list ptid s_MED1-s_MED30
+*look at data of cases in wide form
+list ptid s_MED1-s_MED30 if CACO == 1
 
 *reshape to long data
 reshape long s_MED, i(ptid) j(medid) 
@@ -563,17 +645,34 @@ reshape long s_MED, i(ptid) j(medid)
 *look at most common comorbidities
 tab s_MED, sort
 
-*generate indicator variable for 694 Primary reason for visit 
+*generate indicator variable for 694 Primary diagnosis 
 *	(i.e. 694 in first diagnosis position)
-gen diag1694 = 0
-replace diag1694 = 1 if DIAG13D == "694"
+gen diag1_694 = .
+replace diag1_694 = 1 if DIAG13D == "694"
+tab s_MED if diag1_694 == 1, sort
 
-*look at most common comorbidities
-tab s_MED if diag1694 == 1, sort
+*generate indicator variable for (694.5) Pemphigoid Primary diagnosis 
+*	(i.e. 694.5 in first diagnosis position)
+gen diag1_694_5 = .
+replace diag1_694_5 = 1 if DIAG1 == "6945-"
+tab s_MED if diag1_694_5 == 1, sort
+
+*generate indicator variable for (694.4) Pemphigus Primary diagnosis 
+*	(i.e. 694.4 in first diagnosis position)
+gen diag1_694_4 = .
+replace diag1_694_4 = 1 if DIAG1 == "6944-"
+tab s_MED if diag1_694_4 == 1, sort
+
+*generate indicator variable for Other or Unspecified bullous dermatoses Primary diagnosis 
+*	(i.e. 6940- 6943- 69460 69461 6948- 6949- in first diagnosis position)
+gen diag1_694_other = .
+replace diag1_694_other = 1 if DIAG1 == "6940-" | DIAG1 == "6943-" | DIAG1 == "69460" | DIAG1 == "69461" | DIAG1 == "6948-" | DIAG1 == "6949-"
+tab s_MED if diag1_694_other == 1, sort
+
 
 *save long dataset
 save "namcs_2015to1995_anal_LongMeds.dta", replace
-
+*/
 
 /*
 Pierce's notes for running logistics in NAMCS
@@ -591,8 +690,51 @@ Pierce's notes for running logistics in NAMCS
 */
 
 *use wide analytical dataset for regression analysis
+cls
+clear
+local output_dat "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/1.0_Pemphigus_Analysis"
 cd "`output_dat'"
-use "namcs_2015to1995_anal.dta"
+use "namcs_2015to1995_anal.dta", clear
 
 *load directory for output
 cd "`output_fig'"
+
+
+/* -DG 12/17/18 -
+Need to figure out how to collapse the three strata with single sampling unit.
+There's not that many, or that many observations, but cannot determine strata identification
+because Stata is reporting them in scientific notation only to 2 decimal place.
+The differences in strata are much smaller and it is not possible to identify the strata names
+*/
+
+*replace the strata with 1 PSU with the neighboring value
+*73 observations: CSTRATM == 201.06105
+*replace CSTRATM = 201.06107 if CSTRATM >= 201.061049 * 100000 & CSTRATM <= 201.061051 * 100000
+replace CSTRATM = . if CSTRATM >= 201.061049 * 100000 & CSTRATM <= 201.061054 * 100000
+
+*28 observations: CSTRATM == 202.99112
+*replace CSTRATM = 202.99110 if CSTRATM == 202.99112 * 100000
+replace CSTRATM = . if CSTRATM == 202.99112 * 100000
+
+*39 observations: CSTRATM == 203.00101
+*replace CSTRATM = 202.99115 if CSTRATM == 203.00101 * 100000
+replace CSTRATM = . if CSTRATM == 203.00101 * 100000
+
+
+*preparation for survey sampled logistic regression
+*https://stats.idre.ucla.edu/stata/faq/how-do-i-use-the-stata-survey-svy-commands/
+svyset CPSUM [pweight=PATWT], strata(CSTRATM)
+
+*actually run the regression
+svy: logistic CACO
+
+*how to see where the errors are from
+*	https://www.statalist.org/forums/forum/general-stata-discussion/general/1375170-survey-analysis-error-with-single-stratum
+svydes
+
+*look to see the specific values of the CSTRATM strata that only have 1 PSU value
+gen stratName = CSTRATM / 100000
+format stratName %10.5f
+tab stratName, sort
+
+tab CSTRATM CPSUM

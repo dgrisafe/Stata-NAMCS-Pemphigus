@@ -53,17 +53,17 @@ foreach set in `yeardata1'{
 	use `set'
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
+	keep 	YEAR SETTYPE PATWT CSTRATM CPSUM												///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D			///
 			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED30																///
-			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON AUTISM CANCER CEBVD		///
-			CKD COPD CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID	///
+			MED1-MED30																		///
+			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON AUTISM CANCER CEBVD				///
+			CKD COPD CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID			///
 			HTN OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
 					
 	*format medication variables so consistient with format from year to year
-	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8  MED9  MED10 ///
-				MED11 MED12 MED13 MED14 MED15 MED16 MED17 MED18 MED19 MED20 ///
+	local meds	MED1  MED2  MED3  MED4  MED5  MED6  MED7  MED8  MED9  MED10 	///
+				MED11 MED12 MED13 MED14 MED15 MED16 MED17 MED18 MED19 MED20 	///
 				MED21 MED22 MED23 MED24 MED25 MED26 MED27 MED28 MED29 MED30
 	foreach var in `meds'{
 		*format med variables with -9 as missing
@@ -105,12 +105,12 @@ foreach set in `yeardata1'{
 	use `set'
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D	///
+	keep 	YEAR SETTYPE PATWT CSTRATM CPSUM												///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D DIAG4 DIAG43D DIAG5 DIAG53D			///
 			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED30																///
-			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD CKD COPD	///
-			CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID HTN		///
+			MED1-MED30																		///
+			ETOHAB ALZHD ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD CKD COPD			///
+			CHF CAD DEPRN DIABTYP1 DIABTYP2 DIABTYP0 ESRD HPE HIV HYPLIPID HTN				///
 			OBESITY OSA OSTPRSIS SUBSTAB NOCHRON TOTCHRON
 					
 	*format medication variables so consistient with format from year to year
@@ -159,11 +159,11 @@ foreach set in `yeardata1'{
 	use `set'
 	
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
+	keep 	YEAR SETTYPE PATWT CSTRATM CPSUM												///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D										///
 			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR SPECCAT	///
-			MED1-MED10																///
-			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD COPD CRF CHF DEPRN		///
+			MED1-MED10																		///
+			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CEBVD COPD CRF CHF DEPRN				///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
 	*format medication variables so consistient with format from year to year
@@ -210,11 +210,11 @@ foreach set in `yeardata1'{
 	use `set'
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
+	keep 	YEAR SETTYPE PATWT  CSTRATM CPSUM													///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D											///
 			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGIONOFF MSA OWNSR SPECR_14 SPECCAT	///
-			MED1-MED10																///
-			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CASTAGE CEBVD COPD CRF CHF		///
+			MED1-MED10																			///
+			ARTHRTIS ASTHMA ASTH_SEV ASTH_CON CANCER CASTAGE CEBVD COPD CRF CHF					///
 			DEPRN DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
 	*variables renamed in 2012
@@ -281,11 +281,11 @@ foreach set in `yeardata1'{
 	replace SPECR = 15	if SPECR == 16
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 													///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D							///
+	keep 	YEAR SETTYPE PATWT CSTRATM CPSUM											///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D									///
 			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR SPECCAT	///
-			MED1-MED8															///
-			ARTHRTIS ASTHMA CANCER CEBVD CRF CHF COPD DEPRN DIABETES HYPLIPID	///
+			MED1-MED8																	///
+			ARTHRTIS ASTHMA CANCER CEBVD CRF CHF COPD DEPRN DIABETES HYPLIPID			///
 			HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 			
 	*variables renamed in 2012
@@ -359,11 +359,11 @@ foreach set in `yeardata1'{
 	replace SPECR = 15	if SPECR == 16	
 	
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR SPECCAT		///
-			MED1-MED8																///
-			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
+	keep 	YEAR SETTYPE PATWT CSTRATM CPSUM											///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D									///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR SPECCAT	///
+			MED1-MED8																	///
+			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 					///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
 	*variables renamed in 2008
@@ -441,11 +441,11 @@ foreach set in `yeardata1'{
 	replace SPECR = 15	if SPECR == 16	
 	
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
-			SEX AGE AGER RACER RACERETH RACEUN PAYTYPE REGION MSA OWNSR SPECR SPECCAT		///
-			MED1-MED8																///
-			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
+	keep 	YEAR SETTYPE PATWT  CSTRATM CPSUM											///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D									///
+			SEX AGE AGER RACER RACERETH RACEUN PAYTYPE REGION MSA OWNSR SPECR SPECCAT	///
+			MED1-MED8																	///
+			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 					///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
 	*variables renamed in 2007
@@ -523,11 +523,11 @@ foreach set in `yeardata1'{
 	replace SPECR = 15	if SPECR == 16	
 	
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D								///
+	keep 	YEAR SETTYPE PATWT CSTRATM CPSUM											///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D									///
 			SEX AGE AGER RACER RACERETH RACE PAYTYPE REGION MSA OWNSR SPECR SPECCAT		///
-			MED1-MED8																///
-			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 				///
+			MED1-MED8																	///
+			ARTHRTIS ASTHMA CANCER CASTAGE CEBVD CHF CRF COPD DEPRN 					///
 			DIABETES HYPLIPID HTN IHD OBESITY OSTPRSIS NOCHRON TOTCHRON
 
 	*variables renamed in 2006
@@ -600,9 +600,9 @@ foreach set in `yeardata1'{
 	replace OWNSR = -8	if owns == 6
 	
 	*Keep all variables for weights
-	keep 	year settype patwt 														///
+	keep 	year settype patwt cstratm cpsum										///
 			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH race paytype region msa OWNSR specr speccat		///
+			sex age ager racer RACERETH race paytype region msa OWNSR specr speccat	///
 			med1-med8																///
 			arthrtis asthma cancer chf crf copd cebvd hyplipid deprn				///
 			diabetes htn ihd obesity ostprsis nochron totchron
@@ -678,9 +678,9 @@ foreach set in `yeardata1'{
 	replace OWNSR = -8	if owns == 6
 		
 	*Keep all variables for weights
-	keep 	year settype patwt 														///
-			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH race paytype region msa OWNSR specr 				///
+	keep 	year settype patwt cstratm cpsum								///
+			diag1 diag13d diag2 diag23d diag3 diag33d 						///
+			sex age ager racer RACERETH race paytype region msa OWNSR specr	///
 			med1-med8
 
 	*variables renamed in 2004
@@ -762,9 +762,9 @@ foreach set in `yeardata1'{
 	replace OWNSR = -8	if owns == 6
 		
 	*Keep all variables for weights
-	keep 	year settype patwt 														///
-			diag1 diag13d diag2 diag23d diag3 diag33d 								///
-			sex age ager racer RACERETH race paytype region msa OWNSR specr 		///
+	keep 	year settype patwt cstratm cpsum									///
+			diag1 diag13d diag2 diag23d diag3 diag33d 							///
+			sex age ager racer RACERETH race paytype region msa OWNSR specr 	///
 			med1-med6
 
 	*variables renamed
@@ -846,9 +846,9 @@ foreach set in `yeardata1'{
 	replace OWNSR = -8	if OWNS == 6
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D 								///
-			SEX AGE AGER RACER RACERETH RACE PAYTYPE REGION MSA OWNSR SPECR 		///
+	keep 	YEAR SETTYPE PATWT STRATM PSUM SUBFILE PROSTRAT PROVIDER			///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D 							///
+			SEX AGE AGER RACER RACERETH RACE PAYTYPE REGION MSA OWNSR SPECR 	///
 			MED1-MED6
 
 	*variables renamed in 2004
@@ -935,9 +935,9 @@ foreach set in `yeardata1'{
 	replace OWNSR = -9	if OWNER == 6
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
+	keep 	YEAR SETTYPE PATWT STRATM PSUM SUBFILE PROSTRAT PROVIDER				///
 			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D 								///
-			SEX AGE AGER RACER RACERETH RACE ETHNIC PAYTYPE REGION MSA OWNSR SPECR 		///
+			SEX AGE AGER RACER RACERETH RACE ETHNIC PAYTYPE REGION MSA OWNSR SPECR 	///
 			MED1-MED6
 
 	*variables renamed in 2004
@@ -1035,9 +1035,9 @@ foreach set in `yeardata1'{
 
 		
 	*Keep all variables for weights
-	keep 	YEAR SETTYPE PATWT 														///
-			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D 								///
-			SEX AGE AGER RACER RACERETH RACE ETHNIC PAYTYPE REGION MSA SPECR 		///
+	keep 	YEAR SETTYPE PATWT STRATM PSUM SUBFILE PROSTRAT PROVIDER			///
+			DIAG1 DIAG13D DIAG2 DIAG23D DIAG3 DIAG33D 							///
+			SEX AGE AGER RACER RACERETH RACE ETHNIC PAYTYPE REGION MSA SPECR 	///
 			MED1-MED6
 
 	*variables renamed in 2004
@@ -1060,8 +1060,3 @@ foreach set in `yeardata1'{
 	save `set', replace
 	
 }
-
-
-/*all other years
-namcs2002 namcs2001 namcs2000 namcs1999 namcs1998 namcs1997 namcs1996 namcs1995
-*/
