@@ -3,7 +3,7 @@ clear
 
 /*
 This program will subset variables from years 1993 to 2015 based on a 3-digit ICD9 code.
-To change the 3-digit ICD9 code,  replace any "694" with the desired code.
+To change the 3-digit ICD9 code,  replace "694" with the desired code.
 */
 
 *source folder where all the subset NAMCS datasets are in Stata .dta format
@@ -50,7 +50,7 @@ foreach code in `ThreeD_ICD9' {
 			NOCHRON TOTCHRON STRATM PSUM SUBFILE PROSTRAT PROVIDER
 	
 	*save complete dataset of cases and controls, now with indicator variable
-	save "namcs_2015to1995_ICD9_`code'.dta", replace
+	save namcs_2015to1995_ICD9_`code', replace
 	
 	*keep observations with diagnoses of Bullous dermatoses (694) 
 	keep if	strpos(DIAG13D, "`code'") | strpos(DIAG23D, "`code'") | strpos(DIAG33D, "`code'") | strpos(DIAG43D, "`code'") | strpos(DIAG53D, "`code'")

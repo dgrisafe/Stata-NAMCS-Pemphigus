@@ -35,7 +35,7 @@ use "namcs_2015to1995_ICD9_694.dta"
 	
 /*
 Exploratory data analysis & Formatting
-*/
+/
 
 *change to output directory for datasets with new derived variables
 cd "`output_dat'"
@@ -411,45 +411,6 @@ tab pemphcat pemphcatcol
 	tab provider SPECR
 
 
-/* How to eliminate singletons in NAMCS data
-*	https://www.cdc.gov/nchs/data/ahcd/ultimatecluster.pdf
-*	Problem when running logistic regressions on survey data prior to year 2002
-
-*SAS code to create CSTRATM and CPSUM for 1993-2001
-
-	CSTRATM=STRATM;
-	CPSUM=PSUM;
-	IF CPSUM IN (1 2 3 4) THEN DO;
-	CSTRATM=(STRATM*100000)+(1000*(MOD(YEAR,100)))+
-	(SUBFILE*100)+PROSTRAT;
-	CPSUM=PROVIDER+100000;
-	END;
-	ELSE CSTRATM=(STRATM*100000);
-
-* need to keep variables: STRATM PSUM SUBFILE PROSTRAT PROVIDER
-
-*/
-
-	*this is the Stata version of the SAS loop above, taken from the link above that
-	replace CSTRATM = STRATM if (YEAR >= 1993 & YEAR <= 2001)
-	replace CPSUM  = PSUM if (YEAR >= 1993 & YEAR <= 2001)
-	gen calcWTs = .
-
-	replace CSTRATM = (STRATM * 100000) + (1000 * (mod(YEAR,100))) + (SUBFILE * 100) + PROSTRAT if (YEAR >= 1993 & YEAR <= 2001 & inlist(PSUM,1,2,3,4))
-	replace CPSUM = PROVIDER + 100000 if (YEAR >= 1993 & YEAR <= 2001 & inlist(PSUM,1,2,3,4))
-	replace calcWTs = 1 if (YEAR >= 1993 & YEAR <= 2001 & inlist(PSUM,1,2,3,4))
-
-	replace CSTRATM = (STRATM * 100000) if (YEAR >= 1993 & YEAR <= 2001 & !inlist(PSUM,1,2,3,4))
-	replace calcWTs = 2 if (YEAR >= 1993 & YEAR <= 2001 & !inlist(PSUM,1,2,3,4))
-	
-	label define calcWTsf 1 "Calc 1" 2 "Calc 2"
-	label value calcWTs calcWTsf
-	label variable calcWTs "How was CSTRATM calculated? (Years 1993 to 2001 only)"
-	
-	*look at calculated CSTRATM values
-	tab YEAR calcWTs
-
-
 /*
 **Total Estimated Patient Visits from 1995 to 2015**
 	
@@ -687,7 +648,7 @@ Pierce's notes for running logistics in NAMCS
 	*actually run the regression
 	svy: logistic y x1 x2 x3
 	tab RACER
-*/
+*/ */
 
 *use wide analytical dataset for regression analysis
 cls
@@ -699,42 +660,24 @@ use "namcs_2015to1995_anal.dta", clear
 *load directory for output
 cd "`output_fig'"
 
-
-/* -DG 12/17/18 -
-Need to figure out how to collapse the three strata with single sampling unit.
-There's not that many, or that many observations, but cannot determine strata identification
-because Stata is reporting them in scientific notation only to 2 decimal place.
-The differences in strata are much smaller and it is not possible to identify the strata names
-*/
-
-*replace the strata with 1 PSU with the neighboring value
-*73 observations: CSTRATM == 201.06105
-*replace CSTRATM = 201.06107 if CSTRATM >= 201.061049 * 100000 & CSTRATM <= 201.061051 * 100000
-replace CSTRATM = . if CSTRATM >= 201.061049 * 100000 & CSTRATM <= 201.061054 * 100000
-
-*28 observations: CSTRATM == 202.99112
-*replace CSTRATM = 202.99110 if CSTRATM == 202.99112 * 100000
-replace CSTRATM = . if CSTRATM == 202.99112 * 100000
-
-*39 observations: CSTRATM == 203.00101
-*replace CSTRATM = 202.99115 if CSTRATM == 203.00101 * 100000
-replace CSTRATM = . if CSTRATM == 203.00101 * 100000
-
-
+		
 *preparation for survey sampled logistic regression
 *https://stats.idre.ucla.edu/stata/faq/how-do-i-use-the-stata-survey-svy-commands/
 svyset CPSUM [pweight=PATWT], strata(CSTRATM)
 
-*actually run the regression
-svy: logistic CACO
+local logVar gender agecat5 white insur region setting physoff provider
+
+foreach univar in `logVar' {
+
+	*actually run the regression
+	svy: logistic CACO i.`univar'
+}
+
+*scale AGE to every 10 years to get a trend test
+gen AGE10 = AGE / 10
+svy: logistic CACO AGE10
+
 
 *how to see where the errors are from
 *	https://www.statalist.org/forums/forum/general-stata-discussion/general/1375170-survey-analysis-error-with-single-stratum
-svydes
-
-*look to see the specific values of the CSTRATM strata that only have 1 PSU value
-gen stratName = CSTRATM / 100000
-format stratName %10.5f
-tab stratName, sort
-
-tab CSTRATM CPSUM
+*svydes
