@@ -15,9 +15,6 @@ Formatted to 2015 variables:
 	NOCHRON TOTCHRON
 */
 
-*source folder where the merged NAMCS dataset is in Stata .dta format
-local source_all "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/0.1_Datasets_Merged"
-
 local source_case "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/0.2_Datasets_PemphigusID"
 
 *output folder where analysis Figures and Tables output will be stored
@@ -34,8 +31,11 @@ use "namcs_2015to1995_ICD9_694.dta"
 
 	
 /*
-Exploratory data analysis & Formatting
-/
+Data processing
+	- collapsing variables to appropriately sized categories
+	- identifying outcome variables
+	- saving datasets for further analysis
+*/
 
 *change to output directory for datasets with new derived variables
 cd "`output_dat'"
@@ -117,8 +117,18 @@ tab pemphcat pemphcatcol
 	*look at age variables (AGE, AGER) in original NAMCS categories
 	
 	*look at histogram of age
-*	histogram AGE, frequency name(histogram_AGE, replace)
 	sum AGE, detail	
+	*histogram AGE, frequency name(histogram_AGE, replace)
+	sum AGE if pemphcatcol == 1, detail	
+	*histogram AGE if pemphcatcol == 1, frequency name(hist_6945_AGE, replace)
+	
+	*Age dichotomized
+	gen age70 = .
+	replace age70 = 0 if AGE < 70 & AGE != .
+	replace age70 = 1 if AGE >= 70 & AGE != .
+	label define age70f 0 "< 70" 1 "≥ 70"
+	label value age70 age70f
+	label variable age70 "< 70 years old?"
 	
 	*Age categorized
 	gen agecat = .
@@ -410,69 +420,31 @@ tab pemphcat pemphcatcol
 	label var provider "Physician specialty - 5 Groups"
 	tab provider SPECR
 
-
-/*
-**Total Estimated Patient Visits from 1995 to 2015**
+	*specDerm - look at dermatologists vs primary care vs all other specialists
+	gen specDerm = .
+	*Dermatology: Dermatology
+	replace specDerm = 0 if SPECR == 9
+	*Primary Care: General/family practice, Internal medicine, Pediatrics
+	replace specDerm = 1 if inlist(SPECR, 1, 3, 4)
+	*Other Specialist: Ophthalmology, Otolaryngology, Other specialties
+	replace specDerm = 2 if inlist(SPECR, 5, 6, 7, 8, 10, 11, 12, 13, 14 ,15)
+	label define specDermf	0 "Dermatology"		///
+							1 "Primary Care"	///
+							2 "Other Specialists"				
+	label value specDerm specDermf
+	label var specDerm "Physician specialty - 3 Groups"
+	tab SPECR specDerm
 	
-	*cases
-	total PATWT if CACO == 1
+	*spec2 - make a dichotomous specalty variable: primary care vs specialist
+	gen spec2 = .
+	*primary care
+	replace spec2 = 0 if specDerm == 1
+	*specialist
+	replace spec2 = 1 if inlist(specDerm,0,2) 
+	label define spec2f 0 "Primary care" 1 "Specialist"
+	label value spec2 spec2f
+	label var spec2 "Was provider primary care or specialist?"
 	
-	*controls
-	total PATWT if CACO == 0	
-
-**GRAPH Table 1 Variables w/Collapsed Categories**
-
-local table1_NAMCS		SEX AGER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR
-local table1_all		gender		agecat agecat5		race white		insur		region		setting		practice physoff	provider
-local diseaseCat		pemphcat pemphcatcol 
-local table1_collapse 	gender agecat5 white insur region setting physoff provider
-
-*change directory to analysis figure folder
-cd "`output_fig'"
-
-*summary statistics and estimates of all cases (694)
-sum PATWT if CACO == 1
-total PATWT if CACO == 1
-
-*summary statistics and estimates of all cases (694) by specific diseases
-bysort pemphcatcol:	sum PATWT if CACO == 1
-total PATWT if CACO == 1, over(pemphcatcol)
-
-*Tb1 - summary statistics and estimates of cases (694) and controls by sociodem vars
-foreach dvar in `table1_collapse' {
-	
-	*look at counts in each category of SD variables
-	bysort `dvar':	sum PATWT if CACO == 1
-	bysort `dvar':	sum PATWT if CACO == 0
-	
-	*look at PATWT summed by categorical SD variables
-	total PATWT if CACO == 1, over(`dvar')
-	total PATWT if CACO == 0, over(`dvar')
-}
-
-/*make bar graphs showing frequency counts of each demographic variable for cases and controls
-foreach dvar in `table1_collapse' {
-	
-	**case
-	graph bar (count) if CACO == 1, over(`dvar', label(ticks angle(15) labsize(small)))		///
-		blabel(bar, format(%9.0f))															///
-		title("Frequency of cases from 1995 to 2015 by `dvar'")								///
-		ytitle("Number of Observations (count)")											///
-		name(bar_`dvar'_case, replace)
-		graph export "bar_`dvar'_case.png", replace
-		
-	**control
-	graph bar (count) if CACO == 0, over(`dvar', label(ticks angle(15) labsize(small)))		///
-		blabel(bar, format(%9.0f))															///
-		title("Frequency of controls from 1995 to 2015 by `dvar'")							///
-		ytitle("Number of Observations (count)")											///
-		name(bar_`dvar'_control, replace)
-		graph export "bar_`dvar'_control.png", replace
-
-}
-*/
-*/
-
 *save dataset with reformatted variables
 order ptid CACO YEAR SETTYPE PATWT pemphcatcol pemphcat
 sort ptid
@@ -486,108 +458,240 @@ save "namcs_2015to1995_anal.dta", replace
 keep if CACO == 1
 save "namcs_2015to1995_anal_CasesOnly.dta", replace
 
+/*
+End of Data processing
+*/
+
+*sociodemographic variables
+local sociodem  gender age70 white insur region setting physoff spec2
+
 *reload the entire dataset with formatted variables for further analysis
-use "namcs_2015to1995_anal.dta"
+cd "`output_dat'"
+use "namcs_2015to1995_anal.dta
+	
+
+*Sheet 1: Case Category - all bullous dermatoses by collapsed categories
+tab pemphcat pemphcatcol
+
+
+*Sheet 2: Summary Stats - 694 - all bullous dermatosis
+
+*cases
+
+	*all cases
+	sum PATWT if CACO == 1
+	
+	*cases by bullous dermatoses categories
+	bysort pemphcatcol: sum PATWT if CACO ==1
+
+	*cases by SD variables
+	foreach dvar in `sociodem' {
+		*look at counts in each category of SD variables
+		bysort `dvar':	sum PATWT if CACO == 1
+	}
+
+*controls
+
+	*all controls
+	sum PATWT if CACO != 1
+
+	*controls by SD variables
+	foreach dvar in `sociodem' {
+		*look at counts in each category of SD variables
+		bysort `dvar':	sum PATWT if CACO != 1
+	}
+
+	
+*Sheet 3: Summary Stats - 694.5 - pemphigoid only
+
+*cases
+
+	*all cases
+	sum PATWT if pemphcatcol == 1
+
+	*cases by SD variables
+	foreach dvar in `sociodem' {
+		*look at counts in each category of SD variables
+		bysort `dvar':	sum PATWT if pemphcatcol == 1
+	}
+
+*controls
+
+	*all controls
+	sum PATWT if pemphcatcol != 1
+
+	*controls by SD variables
+	foreach dvar in `sociodem' {
+		*look at counts in each category of SD variables
+		bysort `dvar':	sum PATWT if pemphcatcol != 1
+	}
+	
+*Sheet 4: Table 1 - SD - 694 - all bullous dermatoses
+**Total Estimated Patient Visits from 1995 to 2015**
+
+*cases
+
+	*all cases
+	total PATWT if CACO == 1
+	
+	*cases by bullous dermatoses categories
+	total PATWT if CACO ==1, over(pemphcatcol)
+	
+	*cases by SD variables
+	foreach dvar in `sociodem' {
+		*look at PATWT summed in each category of SD variables
+		total PATWT if CACO == 1, over(`dvar')
+	}
+
+*controls
+
+	*all controls
+	total PATWT if CACO == 0	
+
+	*controls by SD variables
+	foreach dvar in `sociodem' {
+		*look at PATWT summed in each category of SD variables
+		total PATWT if CACO != 1, over(`dvar')
+	}
+
+
+*Sheet 5: Table 1 - SD - 694.5 - pemphigoid only
+**Total Estimated Patient Visits from 1995 to 2015**
+
+*cases
+
+	*all cases
+	total PATWT if pemphcatcol == 1
+		
+	*cases by SD variables
+	foreach dvar in `sociodem' {
+		*look at PATWT summed in each category of SD variables
+		total PATWT if pemphcatcol == 1, over(`dvar')
+	}
+
+*controls
+
+	*all controls
+	total PATWT if pemphcatcol != 1	
+
+	*controls by SD variables
+	foreach dvar in `sociodem' {
+		*look at PATWT summed in each category of SD variables
+		total PATWT if pemphcatcol != 1, over(`dvar')
+	}
 
 
 /*
-Table 1 - Sociodemographics
-/
+Make bar graphs showing frequency counts and estimates for each sociodemographic variable for cases and controls
 
-*change to output directory for analysis figures and tables
+	- 2 plots: number of observations per estimate (by sd variable) for cases and controls
+		this is important because estimates are unreliable if < 30 observations per estimate
+
+	- 2 plots: estimates by sd variable for cases and controls
+		cannot figure out how to show 95% confidence intervals; use excel or R
+		
+	Note: should produce 4 plots for each SD variable
+
+*/
+
+*change directory to folder where graphs will be saved
+local output_fig "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Figures & Tables/1.0_Pemphigus_Analysis"
 cd "`output_fig'"
 
-*all sociodemographic variables in table 1
-local NAMCSvars SEX AGER RACERETH RACEUN PAYTYPER REGION MSA OWNSR SPECR
-
-*for loop showing summed patient weights for each variable
-foreach sdem in `NAMCSvars' {
-
-	*get sum of patient weight (PATWT) by sociodemographic variables
-	total PATWT, over(`sdem')
-	*show number of observations by sociodemographic variables
-	bysort `sdem': sum PATWT, vsquish
+*look at variable frequencies in pemphigoid (694.5) only
+foreach dvar in `sociodem' {
 	
-	*corresponding graphs
-	graph hbar (percent) PATWT, over(`sdem', label(labsize(small) angle(45) ticks))	///
-	blabel(bar, format(%9.1f))														///
-	title("Percent of Total Patient Weight by `sdem'") 								///
-	ytitle("Percent of Patient Weight")												///
-	ylabel(0(25)100) ymticks(0(10)100)
-	*save graph
-	graph export "EDA_`sdem'.png", replace
+	**Cases
 	
+		*shows the number of observations per category for cases
+		graph bar (count) if pemphcatcol == 1, over(`dvar', label(ticks angle(0) labsize(small)))	///
+			blabel(bar, format(%9.0f))																///
+			title("Frequency of Pemphigoid cases from 1995 to 2015")								///
+			subtitle("≥ 30 for reliable estimates")													///
+			ytitle("Number of Observations (count)")												///
+			name(cnt_`dvar'_case, replace)
+		*save graph
+		graph export "cnt_`dvar'_case.png", replace
+
+		*shows estimates by sociodemographic variables for cases
+		graph hbar (sum) PATWT if pemphcatcol == 1, over(`dvar', label(labsize(small) angle(90) ticks))		///
+			blabel(bar, format(%9.0fc))																		///
+			title("Estimated patient visits, 1995-2015") 													///
+			subtitle("Pemphigoid cases")																	///
+			ylabel(0(250000)1100000, format(%9.0fc) angle(15)) ymticks(0(100000)1100000)												///
+			ytitle("Estimated patient visits")																///
+			name(est_`dvar'_case, replace)
+		*save graph
+		graph export "est_`dvar'_case.png", replace
+
+	**Controls
+		
+		*shows the number of observations per category for controls
+		graph bar (count) if pemphcatcol != 1, over(`dvar', label(ticks angle(0) labsize(small)))	///
+			blabel(bar, format(%9.0f))																///
+			title("Frequency of controls from 1995 to 2015")										///
+			subtitle("≥ 30 for reliable estimates")													///
+			ytitle("Number of Observations (count)")												///
+			name(cnt_`dvar'_ctrl, replace)
+		*save graph
+		graph export "cnt_`dvar'_ctrl.png", replace
+		
+		*shows estimates by sociodemographic variables for controls
+		graph hbar (sum) PATWT if pemphcatcol != 1, over(`dvar', label(labsize(small) angle(90) ticks))		///
+			blabel(bar, format(%9.0fc))																		///
+			title("Estimated patient visits, 1995-2015") 													///
+			subtitle("Controls")																			///
+			ylabel(0(5000000000)20000000000, angle(15)) ymticks(0(1000000000)20000000000)												///
+			ytitle("Estimated patient visits")																///
+			name(est_`dvar'_ctrl, replace)
+		*save graph
+		graph export "est_`dvar'_ctrl.png", replace
+
 }
 */
 
-/*
-Table 2 - Bullous dermatoses (ICD9 694) diagnosis types
-/
-
-total PATWT, over(pemphcat)
-
-
-/*
-Figure 1 - table of summed patient weights by year, with 95% confidence intervals
-See Figure 1 (Davis 2015)
-*/
+*Sheet 5: Figure 1 - Visits Year
+**Total estimated patient visits per year from 1995 to 2015**
+*See Figure 1 (Davis 2015)
 
 *data to be used to make a line plot in excel
 
-bysort YEAR:	sum PATWT if CACO == 1
 
 *all Bullous dermatoses
-total PATWT if CACO == 1, over(YEAR)
+
+	*check number of observations per year...make sure ≥ 30 to be reliable
+	bysort YEAR:	sum PATWT if CACO == 1
+
+	*estimates and 95% CL per year
+	total PATWT if CACO == 1, over(YEAR)
 
 *(694.5) Pemphigoid
-bysort YEAR:	sum PATWT if pemphcatcol == 1
-total PATWT if pemphcatcol == 1, over(YEAR)
+
+	*check number of observations per year...make sure ≥ 30 to be reliable
+	bysort YEAR:	sum PATWT if pemphcatcol == 1
+
+	*estimates and 95% CL per year
+	total PATWT if pemphcatcol == 1, over(YEAR)
 
 *(694.4) Pemphigus
-bysort YEAR:	sum PATWT if pemphcatcol == 2
-total PATWT if pemphcatcol == 2, over(YEAR)
+
+	*check number of observations per year...make sure ≥ 30 to be reliable
+	bysort YEAR:	sum PATWT if pemphcatcol == 2
+
+	*estimates and 95% CL per year
+	total PATWT if pemphcatcol == 2, over(YEAR)
 
 *Other or Unspecified bullous dermatoses
-bysort YEAR:	sum PATWT if pemphcatcol == 3
-total PATWT if pemphcatcol == 3, over(YEAR)
-*/
 
-/* 
-reshape diagnosis data from wide to long 
-https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
-*/
+	*check number of observations per year...make sure ≥ 30 to be reliable
+	bysort YEAR:	sum PATWT if pemphcatcol == 3
 
-/*change to output directory for all analysis
-cd "`output_dat'"
-
-*load original wide dataset
-use "namcs_2015to1995_anal_CasesOnly.dta", clear
-
-*look at data in wide form
-list ptid DIAG1 DIAG2 DIAG3 DIAG4 DIAG5 if CACO == 1
-
-*reshape to long data
-reshape long DIAG, i(ptid) j(dxid) 
-
-*look at most common comorbidities: 
-*	(1) IGNORE any pemphigus diagnoses, 
-*	(2) IGNORE any comorbidities that have less than 2 observations
-*all Bullous dermatoses
-tab DIAG if CACO == 1, sort
-
-*(694.5) Pemphigoid
-tab DIAG if pemphcatcol == 1, sort
-
-*(694.4) Pemphigus
-tab DIAG if pemphcatcol == 2, sort
-
-*Other or Unspecified bullous dermatoses
-tab DIAG if pemphcatcol == 3, sort
+	*estimates and 95% CL per year
+	total PATWT if pemphcatcol == 3, over(YEAR)
 
 
-*save long dataset
-save "namcs_2015to1995_anal_LongDiag.dta", replace
-
+*Sheet 6: Meds Table
+**Most common meds prescribed from 1995 to 2015**
 
 /* 
 reshape medications prescribed data from wide to long 
@@ -595,15 +699,13 @@ https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
 */
 
 *load analytical wide dataset
+cd "`output_dat'"
 use "namcs_2015to1995_anal_CasesOnly.dta", clear
-
-*look at data of cases in wide form
-list ptid s_MED1-s_MED30 if CACO == 1
 
 *reshape to long data
 reshape long s_MED, i(ptid) j(medid) 
 
-*look at most common comorbidities
+*look at most common meds
 tab s_MED, sort
 
 *generate indicator variable for 694 Primary diagnosis 
@@ -633,13 +735,50 @@ tab s_MED if diag1_694_other == 1, sort
 
 *save long dataset
 save "namcs_2015to1995_anal_LongMeds.dta", replace
+
+
+*Sheet 7: Comorbidities Table
+**Most common comorbidities from 1995 to 2015**
+
+/* 
+reshape diagnosis data from wide to long 
+https://stats.idre.ucla.edu/stata/modules/reshaping-data-wide-to-long/
 */
 
-/*
-Pierce's notes for running logistics in NAMCS
+*load original wide dataset
+cd "`output_dat'"
+use "namcs_2015to1995_anal_CasesOnly.dta", clear
 
-	*generate pooled weight by XX number of years summed together (specific to NAMCS)
-	gen poolwt = PATWT/12
+*reshape to long data
+reshape long DIAG, i(ptid) j(dxid) 
+
+*look at most common comorbidities: 
+*	(1) IGNORE any pemphigus diagnoses, 
+*	(2) IGNORE any comorbidities that have less than 2 observations
+*all Bullous dermatoses
+tab DIAG if CACO == 1, sort
+
+*(694.5) Pemphigoid
+tab DIAG if pemphcatcol == 1, sort
+
+*(694.4) Pemphigus
+tab DIAG if pemphcatcol == 2, sort
+
+*Other or Unspecified bullous dermatoses
+tab DIAG if pemphcatcol == 3, sort
+
+
+*save long dataset
+save "namcs_2015to1995_anal_LongDiag.dta", replace
+
+
+
+*Sheet 8: Table 2 - SD ORs
+**The code is here, but these ORs are not reliable due to data sparsity
+**They will not be reported in the analysis
+
+/*
+Notes for running logistics in NAMCS
 
 	*preparation for survey sampled logistic regression
 	*https://stats.idre.ucla.edu/stata/faq/how-do-i-use-the-stata-survey-svy-commands/
@@ -647,36 +786,26 @@ Pierce's notes for running logistics in NAMCS
 
 	*actually run the regression
 	svy: logistic y x1 x2 x3
-	tab RACER
-*/ */
 
-*use wide analytical dataset for regression analysis
-cls
-clear
-local output_dat "/Volumes/GoogleDrive/My Drive/20181101_NAMCS Pierce/Datasets/Pemphigus1995-15/1.0_Pemphigus_Analysis"
+*/
+
+*use wide analytical dataset for logistic regression analysis
 cd "`output_dat'"
 use "namcs_2015to1995_anal.dta", clear
 
-*load directory for output
-cd "`output_fig'"
-
+*make outcome variable specific to pemphigoid
+gen CACO_6945 = .
+replace CACO_6945 = 1 if pemphcatcol == 1
+replace CACO_6945 = 0 if pemphcatcol != 1
 		
 *preparation for survey sampled logistic regression
-*https://stats.idre.ucla.edu/stata/faq/how-do-i-use-the-stata-survey-svy-commands/
 svyset CPSUM [pweight=PATWT], strata(CSTRATM)
 
-local logVar gender agecat5 white insur region setting physoff provider
-
-foreach univar in `logVar' {
+foreach univar in `sociodem' {
 
 	*actually run the regression
-	svy: logistic CACO i.`univar'
+	svy: logistic CACO_6945 i.`univar'
 }
-
-*scale AGE to every 10 years to get a trend test
-gen AGE10 = AGE / 10
-svy: logistic CACO AGE10
-
 
 *how to see where the errors are from
 *	https://www.statalist.org/forums/forum/general-stata-discussion/general/1375170-survey-analysis-error-with-single-stratum
