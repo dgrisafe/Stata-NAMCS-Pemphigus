@@ -777,10 +777,10 @@ foreach set in `yeardata1'{
 	*	NOTE: med variables already strings
 	local meds	MED1  MED2  MED3  MED4  MED5  MED6
 	foreach var in `meds'{
-		*format med variables with 90000 as missing
-		replace `var' = "" if `var' == "90000"
-		*rename variable to follow format
-		generate s_`var' = `var' 
+		*format med variables with -9 as missing
+		replace `var' = . if `var' == 90000
+		*convert to string
+		decode `var', generate(s_`var')
 		*drop categorical labeled variable
 		drop `var'
 	}
